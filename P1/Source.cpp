@@ -5,9 +5,10 @@
 #include "Graph.h"
 
 //number of vertices for the graph
-const int NODES = 15; 
+const int NODES = 4; 
 //edge density in percent 1 to 100
-const int DENSITY = 28; 
+const int DENSITY = 60; 
+
 
 using namespace std;
 
@@ -16,6 +17,10 @@ using namespace std;
 int rollDice();
 void createEdges(Graph graph[][NODES]);
 void printGraph(Graph graph[][NODES]);
+void decToBinary(int n, int combination[]);
+void getDomanantSet(Graph graph[][NODES], int combination[]);
+
+
 
 
 
@@ -25,8 +30,14 @@ int main()
 	//getting the seed for the random
 	srand(time(0));
 	Graph graph[NODES][NODES];
+	
 	createEdges(graph);
 	printGraph(graph);
+
+	int combination[NODES + 1];
+	
+
+	getDomanantSet(graph, combination);
 
 
 	
@@ -41,9 +52,11 @@ int main()
 void createEdges(Graph graph[][NODES])
 {
 	int percent; 
+	int j;
 	for (int i = 0; i < NODES; i++)
 	{
-		for (int j = 0; j < NODES; j++)
+		
+		for (j =0; j < i; j++)
 		{
 			percent = rollDice();
 			if (percent <= DENSITY)
@@ -61,6 +74,12 @@ void createEdges(Graph graph[][NODES])
 
 
 		}
+
+		if (i == j)
+		{
+			graph[i][j].setEdge(false);
+			graph[i][j].setNodeId(0);
+		}
 	}
 }
 //-----------------------------------------------------------------------------------------
@@ -73,6 +92,64 @@ int rollDice()
 	percent = rand() % 100 + 1; 
 
 	return percent; 
+
+}
+//-----------------------------------------------------------------------------------------
+//this function goes through different combination of graph 
+void getDomanantSet(Graph graph[][NODES], int combination[])
+{
+	
+
+	for (int i=0; i < NODES + 1; i++)
+	{
+		combination[i] = 0; 
+	}
+	
+	
+
+	
+	//go through all the combinations until the last index of the combination is 1
+	int i = 1;
+	while (combination[NODES] !=1 )
+	{
+		decToBinary(i, combination);
+
+		
+		//cout << i << endl;
+		i++;
+
+	
+
+	}
+
+	
+
+
+}
+//-----------------------------------------------------------------------------------------------
+// function to convert decimal to binary 
+void decToBinary(int n, int combination[])
+{
+	// array to store binary number 
+	//int binaryNum[NODES+1];
+
+	// counter for binary array 
+	int i = 0;
+	while (n > 0) {
+
+		// storing remainder in binary array 
+		combination[i] = n % 2;
+		n = n / 2;
+		i++;
+	}
+
+
+	
+	// printing binary array in reverse order 
+	//for(int j =0; j<i; j++)
+		//cout << combination[j];
+
+	//cout << endl;
 
 }
 //======================================================================
@@ -108,7 +185,7 @@ void printGraph(Graph graph[][NODES])
 		{
 			cout << "[" << i + 1 << "] ";
 		}
-		for (int j = 0; j < NODES; j++)
+		for (int j = 0; j <= i; j++)
 		{
 
 			if (graph[i][j].hasEdge())
@@ -123,5 +200,4 @@ void printGraph(Graph graph[][NODES])
 		cout << endl;
 	}
 }
-
 
