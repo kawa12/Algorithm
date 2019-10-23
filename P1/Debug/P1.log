@@ -1,3 +1,4 @@
 ﻿  Source.cpp
-C:\Users\kawar\Desktop\Fall Semester 2019\Analysis of Algorithms\LocalGitHub\Algorithm\P1\Source.cpp(31,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+C:\Users\kawar\Desktop\Fall Semester 2019\Analysis of Algorithms\LocalGitHub\Algorithm\P1\Source.cpp(33,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+C:\Users\kawar\Desktop\Fall Semester 2019\Analysis of Algorithms\LocalGitHub\Algorithm\P1\Source.cpp(34,6): warning C4101: 'combination': unreferenced local variable
   P1.vcxproj -> C:\Users\kawar\Desktop\Fall Semester 2019\Analysis of Algorithms\LocalGitHub\Algorithm\P1\Debug\P1.exe

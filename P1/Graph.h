@@ -4,6 +4,7 @@ class Graph
 private:
 	int nodeId;
 	bool isConnected;
+	bool checked;
 	
 
 public:
@@ -12,6 +13,10 @@ public:
 	void setNodeId(int id);
 	void setEdge(bool set);
 	bool hasEdge();
+
+	void setVisited(bool been);
+	bool isVisited();
+
 
 	
 

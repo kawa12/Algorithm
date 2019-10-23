@@ -24,3 +24,14 @@ bool Graph::hasEdge()
 {
 	return isConnected;
 }
+
+void Graph::setVisited(bool been)
+{
+	checked = been;
+}
+
+
+bool Graph::isVisited()
+{
+	return checked;
+}
