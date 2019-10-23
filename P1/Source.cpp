@@ -7,7 +7,7 @@
 //number of vertices for the graph
 const int NODES = 5; 
 //edge density in percent 1 to 100
-const int DENSITY = 40; 
+const int DENSITY = 44; 
 
 
 
@@ -21,9 +21,13 @@ void printGraph(Graph graph[][NODES]);
 void decToBinary(int n, int combination[]);
 void getDomanantSet(Graph graph[][NODES], int combination[]);
 void doApprox(Graph graph[][NODES], int maxSet[NODES]);
-int getAverageNumOfEdges(Graph graph[][NODES]);
+int findDomNode(Graph graph[][NODES]);
 
-
+struct DomNode
+{
+	int nodeNum;
+	int edgeNum;
+};
 
 
 
@@ -42,7 +46,7 @@ int main()
 
 
 
-	cout << "Dominant vertices are: ";
+	cout << "Estimated dominant vertices are: ";
 	for (int i = 0; i < NODES; i++)
 	{
 		if (maxSet[i] != 0)
@@ -179,38 +183,48 @@ void doApprox(Graph graph[][NODES], int maxSet[NODES])
 {
 	int k = 0;
 	int numberOfEdges;
-	int avgEdge = getAverageNumOfEdges(graph);
-	if (avgEdge == 0)
-		{
-		avgEdge = 1;
-		}
-	
-	for (int i = 0; i < NODES; i++)
-	{
+	int prev = 0;
+	for(int i =0; i<NODES; i++)
 		maxSet[i] = 0;
-		numberOfEdges = 0;
-		for (int j = 0; j < i; j++)
+
+
+
+	
+	int nodeWithMaxEdges = findDomNode(graph);
+	while (!graph[nodeWithMaxEdges][k].isVisited())
+
+	{
+	
+		//cout << "RECEIVED MAX NODE: " << (nodeWithMaxEdges +1) << endl;
+		if (!graph[nodeWithMaxEdges][k].isVisited() && graph[nodeWithMaxEdges][k].hasEdge())
 		{
-			if (graph[i][j].hasEdge() && !graph[i][j].isVisited())
+			for (int i = 0; i < NODES; i++)
 			{
-				numberOfEdges++;
-				//cout << i + 1 << "i " << j + 1 << "j " << endl;
-				graph[i][j].setVisited(true);
-
-				
-				
-					
-				
-				
-
+				if (maxSet[i] != nodeWithMaxEdges + 1)
+					maxSet[k] = nodeWithMaxEdges + 1;
 			}
+			for (int i = 0; i < NODES; i++)
+			{
+				if (graph[nodeWithMaxEdges][i].hasEdge())
+				{
+					graph[nodeWithMaxEdges][i].setVisited(true);
+					graph[i][nodeWithMaxEdges].setVisited(true);
+					for (int j = 0; j < NODES; j++)
+					{
+						if (graph[i][j].hasEdge())
+							graph[i][j].setVisited(true);
+					}
+				}
+			}
+			
+			nodeWithMaxEdges = findDomNode(graph);
 		}
-		if (numberOfEdges >= avgEdge)
-		{
-			maxSet[k] = (i + 1);
-			k++;
-		}
+
+		k++;
 	}
+
+
+	
 }
 //======================================================================
 //printing the graph into the console to look at the edges  0 = no edge 1 = there is a edge
@@ -263,58 +277,54 @@ void printGraph(Graph graph[][NODES])
 }
 //=============================================================================
 //this finds out what is the maximum and minimum number of edges in the graph and return the average.
-int getAverageNumOfEdges(Graph graph[][NODES])
+int findDomNode(Graph graph[][NODES])
 {
 
 	int numberOfEdges;
-	int arry[NODES];
-	int k = 0;
+	DomNode arry[NODES];
+
 	for (int i = 0; i < NODES; i++)
 	{
 		
+		arry[i].edgeNum = 0;
+		arry[i].nodeNum = 0;
+
 		numberOfEdges = 0;
 
-		for (int j = 0; j < i; j++)
+		for (int j = 0; j < NODES; j++)
 		{
+
 			if (graph[i][j].hasEdge() && !graph[i][j].isVisited())
 			{
 				numberOfEdges++;
-				//cout << i + 1 << "i " << j + 1 << "j " << endl;
-				//graph[i][j].setVisited(true);
-
-
-
-
-
-
 
 			}
 		}
+	
+		//cout << "NODE: " << i+1 << " MAX EDGES: " << numberOfEdges << endl;
+		arry[i].nodeNum = i;
+		arry[i].edgeNum = numberOfEdges;
 		
-		arry[k] = numberOfEdges;
-		k++;
 	}
 
 	int max;
-	int min;
-	max = arry[0];
-	min = arry[0];
+	int nodeNum;
+	max = arry[0].edgeNum;
+	nodeNum = arry[0].nodeNum;
 
 	for (int i = 0; i < NODES; i++)
 	{
 		
-		if (max < arry[i])
-			max = arry[i];
-		if (min > arry[i])
-			min = arry[i];
+		if (max < arry[i].edgeNum)
+		{
+			max = arry[i].edgeNum;
+			nodeNum = arry[i].nodeNum;
+		}
 
 	}
 
-
-	//cout << "MAX " << max << endl;
-	//cout << "MIN " << min << endl;
-
-	return (min + max) / 2;
+	//cout << "MAX RETURNED NODE : " << nodeNum + 1 << " MAX EDG: "<<max << endl;
+	return nodeNum;
 }
 
 
