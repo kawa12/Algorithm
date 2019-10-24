@@ -7,7 +7,7 @@
 //number of vertices for the graph
 const int NODES = 5; 
 //edge density in percent 1 to 100
-const int DENSITY = 44; 
+const int DENSITY = 45; 
 
 
 
@@ -22,6 +22,7 @@ void decToBinary(int n, int combination[]);
 void getDomanantSet(Graph graph[][NODES], int combination[]);
 void doApprox(Graph graph[][NODES], int maxSet[NODES]);
 int findDomNode(Graph graph[][NODES]);
+bool isNodeDisJoint(Graph graph[][NODES], int i);
 
 struct DomNode
 {
@@ -188,38 +189,54 @@ void doApprox(Graph graph[][NODES], int maxSet[NODES])
 		maxSet[i] = 0;
 
 
-
-	
 	int nodeWithMaxEdges = findDomNode(graph);
-	while (!graph[nodeWithMaxEdges][k].isVisited())
-
+	while (k<NODES)
 	{
-	
-		//cout << "RECEIVED MAX NODE: " << (nodeWithMaxEdges +1) << endl;
-		if (!graph[nodeWithMaxEdges][k].isVisited() && graph[nodeWithMaxEdges][k].hasEdge())
+		//cout << "RECEIVED MAX NODE: " << nodeWithMaxEdges+1 << endl;
+		if (isNodeDisJoint(graph, k))
 		{
-			for (int i = 0; i < NODES; i++)
-			{
-				if (maxSet[i] != nodeWithMaxEdges + 1)
-					maxSet[k] = nodeWithMaxEdges + 1;
-			}
-			for (int i = 0; i < NODES; i++)
-			{
-				if (graph[nodeWithMaxEdges][i].hasEdge())
+			maxSet[k] = k+1;
+			for (int a = 0; a < NODES; a++)
+				graph[k][a].setVisited(true);
+
+			//cout << "IF " << endl;
+		}
+	
+		else 
+		{
+			//cout << "ELSE" << endl;
+			
+			if (graph[nodeWithMaxEdges][k].hasEdge() && !graph[nodeWithMaxEdges][k].isVisited())
+			{ 
+				//cout << "INSIDE IF: " << endl;
+				maxSet[k] = nodeWithMaxEdges + 1;
+				for (int i = 0; i < NODES; i++)
 				{
 					graph[nodeWithMaxEdges][i].setVisited(true);
 					graph[i][nodeWithMaxEdges].setVisited(true);
 					for (int j = 0; j < NODES; j++)
 					{
-						if (graph[i][j].hasEdge())
+						if (graph[i][j].hasEdge() && graph[j][nodeWithMaxEdges].hasEdge())
+						{
+							//cout << "JAY: "<<j << endl;
 							graph[i][j].setVisited(true);
+							graph[j][i].setVisited(true);
+						}
+							
 					}
+					
 				}
-			}
 			
-			nodeWithMaxEdges = findDomNode(graph);
+				
+			}
+			else
+			{
+				graph[nodeWithMaxEdges][k].setVisited(true);
+				graph[k][nodeWithMaxEdges].setVisited(true);
+			}
 		}
-
+		nodeWithMaxEdges = findDomNode(graph);
+		//cout << "Incremented! " << endl;
 		k++;
 	}
 
@@ -227,6 +244,82 @@ void doApprox(Graph graph[][NODES], int maxSet[NODES])
 	
 }
 //======================================================================
+
+//this finds out what is the maximum and minimum number of edges in the graph and return the average.
+int findDomNode(Graph graph[][NODES])
+{
+
+	int numberOfEdges;
+	DomNode arry[NODES];
+
+	for (int i = 0; i < NODES; i++)
+	{
+		
+		arry[i].edgeNum = 0;
+		arry[i].nodeNum = 0;
+
+		numberOfEdges = 0;
+
+		for (int j = 0; j < NODES; j++)
+		{
+
+			if (graph[i][j].hasEdge() && !graph[i][j].isVisited())
+			{
+				numberOfEdges++;
+
+			}
+
+		}
+	
+		//cout << "NODE: " << i+1 << " MAX EDGES: " << numberOfEdges << endl;
+		arry[i].nodeNum = i;
+		arry[i].edgeNum = numberOfEdges;
+		
+	}
+
+	int max;
+	int nodeNum;
+	max = arry[0].edgeNum;
+	nodeNum = arry[0].nodeNum;
+
+	for (int i = 0; i < NODES; i++)
+	{
+		
+		if (max < arry[i].edgeNum)
+		{
+			max = arry[i].edgeNum;
+			nodeNum = arry[i].nodeNum;
+		}
+
+	}
+
+	//cout << "MAX RETURNED NODE : " << nodeNum + 1 << " MAX EDG: "<<max << endl;
+	return nodeNum;
+}
+//=================================================================================================
+bool isNodeDisJoint(Graph graph[][NODES], int i)
+{
+
+	int counter;
+	
+	counter = 0;
+	for (int j = 0; j < NODES; j++)
+	{
+		if (graph[i][j].hasEdge())
+		{
+			counter++;
+		}
+	}
+
+	if (counter == 0)
+		return true;
+	else
+		return false;
+
+		
+	
+}
+//==================================================================================================
 //printing the graph into the console to look at the edges  0 = no edge 1 = there is a edge
 void printGraph(Graph graph[][NODES])
 {
@@ -276,55 +369,4 @@ void printGraph(Graph graph[][NODES])
 	}
 }
 //=============================================================================
-//this finds out what is the maximum and minimum number of edges in the graph and return the average.
-int findDomNode(Graph graph[][NODES])
-{
-
-	int numberOfEdges;
-	DomNode arry[NODES];
-
-	for (int i = 0; i < NODES; i++)
-	{
-		
-		arry[i].edgeNum = 0;
-		arry[i].nodeNum = 0;
-
-		numberOfEdges = 0;
-
-		for (int j = 0; j < NODES; j++)
-		{
-
-			if (graph[i][j].hasEdge() && !graph[i][j].isVisited())
-			{
-				numberOfEdges++;
-
-			}
-		}
-	
-		//cout << "NODE: " << i+1 << " MAX EDGES: " << numberOfEdges << endl;
-		arry[i].nodeNum = i;
-		arry[i].edgeNum = numberOfEdges;
-		
-	}
-
-	int max;
-	int nodeNum;
-	max = arry[0].edgeNum;
-	nodeNum = arry[0].nodeNum;
-
-	for (int i = 0; i < NODES; i++)
-	{
-		
-		if (max < arry[i].edgeNum)
-		{
-			max = arry[i].edgeNum;
-			nodeNum = arry[i].nodeNum;
-		}
-
-	}
-
-	//cout << "MAX RETURNED NODE : " << nodeNum + 1 << " MAX EDG: "<<max << endl;
-	return nodeNum;
-}
-
 
