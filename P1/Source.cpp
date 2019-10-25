@@ -5,9 +5,9 @@
 #include "Graph.h"
 
 //number of vertices for the graph
-const int NODES = 5; 
+const int NODES = 15; 
 //edge density in percent 1 to 100
-const int DENSITY = 45; 
+const int DENSITY = 10; 
 
 
 
@@ -44,6 +44,9 @@ int main()
 	printGraph(graph);
 	//getDomanantSet(graph, combination);
 	doApprox(graph, maxSet);
+
+
+
 
 
 
@@ -185,59 +188,52 @@ void doApprox(Graph graph[][NODES], int maxSet[NODES])
 	int k = 0;
 	int numberOfEdges;
 	int prev = 0;
+
+	
 	for(int i =0; i<NODES; i++)
 		maxSet[i] = 0;
 
-
+	for (int l = 0; l < NODES; l++)
+	{
+		if (isNodeDisJoint(graph, l))
+		{
+			maxSet[prev] = l + 1;
+			prev++;
+		}
+	}
 	int nodeWithMaxEdges = findDomNode(graph);
-	while (k<NODES)
+	while (k <(NODES*NODES))
 	{
 		//cout << "RECEIVED MAX NODE: " << nodeWithMaxEdges+1 << endl;
-		if (isNodeDisJoint(graph, k))
-		{
-			maxSet[k] = k+1;
-			for (int a = 0; a < NODES; a++)
-				graph[k][a].setVisited(true);
-
-			//cout << "IF " << endl;
-		}
+		
 	
-		else 
-		{
-			//cout << "ELSE" << endl;
-			
-			if (graph[nodeWithMaxEdges][k].hasEdge() && !graph[nodeWithMaxEdges][k].isVisited())
-			{ 
+		if (graph[nodeWithMaxEdges][k].hasEdge())
+		{ 
 				//cout << "INSIDE IF: " << endl;
-				maxSet[k] = nodeWithMaxEdges + 1;
-				for (int i = 0; i < NODES; i++)
+			maxSet[prev] = nodeWithMaxEdges + 1;
+			for (int i = 0; i < NODES; i++)
+			{
+				graph[nodeWithMaxEdges][i].setEdge(false);
+				graph[i][nodeWithMaxEdges].setEdge(false);
+				/*
+				for (int m = 0; m < NODES; m++)
 				{
-					graph[nodeWithMaxEdges][i].setVisited(true);
-					graph[i][nodeWithMaxEdges].setVisited(true);
-					for (int j = 0; j < NODES; j++)
+					if (graph[i][m].hasEdge() && graph[m][nodeWithMaxEdges].hasEdge())
 					{
-						if (graph[i][j].hasEdge() && graph[j][nodeWithMaxEdges].hasEdge())
-						{
-							//cout << "JAY: "<<j << endl;
-							graph[i][j].setVisited(true);
-							graph[j][i].setVisited(true);
-						}
-							
+						graph[i][m].setEdge(false);
 					}
-					
 				}
-			
+				*/
 				
 			}
-			else
-			{
-				graph[nodeWithMaxEdges][k].setVisited(true);
-				graph[k][nodeWithMaxEdges].setVisited(true);
-			}
-		}
-		nodeWithMaxEdges = findDomNode(graph);
-		//cout << "Incremented! " << endl;
-		k++;
+			//printGraph(graph);
+			nodeWithMaxEdges = findDomNode(graph);
+			prev++;
+			
+		}	
+	
+	//cout << "Incremented! " << endl;
+	k++;
 	}
 
 
@@ -263,7 +259,7 @@ int findDomNode(Graph graph[][NODES])
 		for (int j = 0; j < NODES; j++)
 		{
 
-			if (graph[i][j].hasEdge() && !graph[i][j].isVisited())
+			if (graph[i][j].hasEdge())
 			{
 				numberOfEdges++;
 
@@ -357,11 +353,11 @@ void printGraph(Graph graph[][NODES])
 
 			if (graph[i][j].hasEdge())
 			{
-				cout << graph[i][j].getGraphId() << "    ";
+				cout << 1 << "    ";
 			}
 			else
 			{
-				cout << graph[i][j].getGraphId() << "    ";
+				cout << 0 << "    ";
 			}
 			graph[i][j].setVisited(false);
 		}
