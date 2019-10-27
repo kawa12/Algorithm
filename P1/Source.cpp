@@ -5,9 +5,9 @@
 #include "Graph.h"
 
 //number of vertices for the graph
-const int NODES = 15; 
+const int NODES = 4; 
 //edge density in percent 1 to 100
-const int DENSITY = 10; 
+const int DENSITY = 46; 
 
 
 
@@ -19,7 +19,7 @@ int rollDice();
 void createEdges(Graph graph[][NODES]);
 void printGraph(Graph graph[][NODES]);
 void decToBinary(int n, int combination[]);
-void getDomanantSet(Graph graph[][NODES], int combination[]);
+void getDomanantSet(Graph graph[][NODES]);
 void doApprox(Graph graph[][NODES], int maxSet[NODES]);
 int findDomNode(Graph graph[][NODES]);
 bool isNodeDisJoint(Graph graph[][NODES], int i);
@@ -36,19 +36,19 @@ int main()
 {
 	//getting the seed for the random
 	srand(time(0));
-	int combination[NODES + 1];
+	
 	int maxSet[NODES];
 	Graph graph[NODES][NODES];
 	
 	createEdges(graph);
 	printGraph(graph);
-	//getDomanantSet(graph, combination);
-	doApprox(graph, maxSet);
+	getDomanantSet(graph);
+	//doApprox(graph, maxSet);
 
 
 
 
-
+	/*
 
 	cout << "Estimated dominant vertices are: ";
 	for (int i = 0; i < NODES; i++)
@@ -62,7 +62,7 @@ int main()
 	cout << endl << endl;
 
 
-	
+	*/
 
 
 
@@ -124,32 +124,118 @@ int rollDice()
 }
 //-----------------------------------------------------------------------------------------
 //this function goes through different combination of graph 
-void getDomanantSet(Graph graph[][NODES], int combination[])
+void getDomanantSet(Graph graph[][NODES])
 {
 	
+	int combination[NODES + 1];
+	int workArry[NODES];
+	bool isDominated;
+	bool dominatedSetFound = false;
 
-	for (int i=0; i < NODES + 1; i++)
+	int dominatedNodes[NODES + 100];
+	
+
+	for (int t=0; t < NODES+1; t++)
 	{
-		combination[i] = 0; 
+		combination[t] = 0;
+		if (t < NODES)
+		{
+			workArry[t] =0;
+			dominatedNodes[t] =0;
+		}
+	
+		
 	}
 	
-	
+
 
 	
 	//go through all the combinations until the last index of the combination is 1
 	int i = 1;
-	while (combination[NODES] !=1 )
+
+	int add = 0;
+	while (combination[NODES] !=1 && !dominatedSetFound )
 	{
 		decToBinary(i, combination);
+		for (int d = 0; d < NODES; d++)
+			{
+			workArry[d] = combination[d];
+			}
+		for (int a = 0; a < NODES; a++)
+		{
+			if (workArry[a] == 1)
+			{
+				
+				for (int v = 0; v<NODES; v++)
+				{
+					
+					if (graph[a][v].hasEdge())
+					{
+						if (workArry[v] == 0)
+						{
+							workArry[v] = 2;
+							
+							//cout << "got a 2:  " <<v+1<< endl;
+						}
 
+
+					}
+					
 		
-		//cout << i << endl;
-		i++;
+				}
+				
 
+				isDominated = true;
+				for (int y = 0; y < NODES; y++)
+				{
+					//cout << workArry[y];
+					if (workArry[y] == 0)
+						isDominated = false;
+				}
+				//checking from here now
+				//cout << endl;
+
+				if (isDominated)
+				{
+					cout << "Found Dominated Set" << endl;
+					for (int r = 0; r < NODES; r++)
+					{
+						if (workArry[r] == 1)
+						{
+						//dominatedNodes[add] = r + 1;
+						//++;
+						cout << 1+r <<", ";
+						
+						}
+
+					
+					}
+					cout << endl;
+					dominatedSetFound = true;
+					
+					
+					
+				}
+			}
+			if (dominatedSetFound)
+				break;
+		}
+		
+
+		i++;
 	
 
 	}
-
+	
+	cout << "Dominated Nodes are: ";
+	for (int u = 0; u < NODES; u++)
+	{
+		if (dominatedNodes[u] != 0)
+			cout << dominatedNodes[u] <<", " << endl;
+	
+	}
+	cout << endl;
+	
 	
 
 

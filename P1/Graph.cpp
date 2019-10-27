@@ -2,6 +2,9 @@
 
 Graph::Graph()
 {
+	nodeId = 0;
+	isConnected = false;
+	checked = false;
 
 }
 
