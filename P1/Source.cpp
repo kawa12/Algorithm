@@ -3,9 +3,9 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include "Graph.h"
-
+#include <ctime>
 //number of vertices for the graph
-const int NODES = 20; 
+const int NODES = 30; 
 //edge density in percent 1 to 100
 const int DENSITY = 46; 
 
@@ -46,7 +46,18 @@ int main()
 	
 	createEdges(graph);
 	printGraph(graph);
+	
+	time_t time0;
+	time_t time1; 
+
+	time(&time0);
+
 	getDomanantSet(graph, dominatedNodes);
+
+	time(&time1);
+	double second = time1 - time0;
+	cout << "Time Elapsed: " << second  <<" Seconds"<< endl;
+
 	//doApprox(graph, maxSet);
 
 
