@@ -5,7 +5,7 @@
 #include "Graph.h"
 
 //number of vertices for the graph
-const int NODES = 4; 
+const int NODES = 20; 
 //edge density in percent 1 to 100
 const int DENSITY = 46; 
 
@@ -19,10 +19,12 @@ int rollDice();
 void createEdges(Graph graph[][NODES]);
 void printGraph(Graph graph[][NODES]);
 void decToBinary(int n, int combination[]);
-void getDomanantSet(Graph graph[][NODES]);
+void getDomanantSet(Graph graph[][NODES], int dominatedNodes[]);
 void doApprox(Graph graph[][NODES], int maxSet[NODES]);
 int findDomNode(Graph graph[][NODES]);
 bool isNodeDisJoint(Graph graph[][NODES], int i);
+int power(int base, int exp);
+int binaryToDec(int arr[]);
 
 struct DomNode
 {
@@ -39,30 +41,32 @@ int main()
 	
 	int maxSet[NODES];
 	Graph graph[NODES][NODES];
+
+	int dominatedNodes[NODES];
 	
 	createEdges(graph);
 	printGraph(graph);
-	getDomanantSet(graph);
+	getDomanantSet(graph, dominatedNodes);
 	//doApprox(graph, maxSet);
 
 
 
 
-	/*
+	
 
-	cout << "Estimated dominant vertices are: ";
+	cout << "Dominant vertices are: ";
 	for (int i = 0; i < NODES; i++)
 	{
-		if (maxSet[i] != 0)
+		if (dominatedNodes[i] != 0)
 		{
-			cout << maxSet[i] << ", ";
+			cout << dominatedNodes[i] << ", ";
 
 		}
 	}
 	cout << endl << endl;
 
 
-	*/
+	
 
 
 
@@ -124,15 +128,16 @@ int rollDice()
 }
 //-----------------------------------------------------------------------------------------
 //this function goes through different combination of graph 
-void getDomanantSet(Graph graph[][NODES])
+void getDomanantSet(Graph graph[][NODES], int dominatedNodes[] )
 {
 	
 	int combination[NODES + 1];
 	int workArry[NODES];
 	bool isDominated;
 	bool dominatedSetFound = false;
-
-	int dominatedNodes[NODES + 100];
+	//int q = power(2, NODES);
+	
+		
 	
 
 	for (int t=0; t < NODES+1; t++)
@@ -141,26 +146,26 @@ void getDomanantSet(Graph graph[][NODES])
 		if (t < NODES)
 		{
 			workArry[t] =0;
-			dominatedNodes[t] =0;
+			*(dominatedNodes+t) =0;
 		}
 	
 		
 	}
 	
-
-
+	//cout << binaryToDec(workArry) << endl;
 	
 	//go through all the combinations until the last index of the combination is 1
 	int i = 1;
 
 	int add = 0;
-	while (combination[NODES] !=1 && !dominatedSetFound )
+	while (combination[NODES] !=1)
 	{
 		decToBinary(i, combination);
 		for (int d = 0; d < NODES; d++)
 			{
 			workArry[d] = combination[d];
 			}
+
 		for (int a = 0; a < NODES; a++)
 		{
 			if (workArry[a] == 1)
@@ -174,8 +179,7 @@ void getDomanantSet(Graph graph[][NODES])
 						if (workArry[v] == 0)
 						{
 							workArry[v] = 2;
-							
-							//cout << "got a 2:  " <<v+1<< endl;
+						
 						}
 
 
@@ -192,19 +196,18 @@ void getDomanantSet(Graph graph[][NODES])
 					if (workArry[y] == 0)
 						isDominated = false;
 				}
-				//checking from here now
 				//cout << endl;
 
-				if (isDominated)
+				if (isDominated && !dominatedSetFound)
 				{
-					cout << "Found Dominated Set" << endl;
+					//cout << "Found Dominated Set" << endl;
 					for (int r = 0; r < NODES; r++)
 					{
 						if (workArry[r] == 1)
 						{
-						//dominatedNodes[add] = r + 1;
-						//++;
-						cout << 1+r <<", ";
+						dominatedNodes[add] = r + 1;
+						add++;
+						//cout << 1+r <<", ";
 						
 						}
 
@@ -217,8 +220,8 @@ void getDomanantSet(Graph graph[][NODES])
 					
 				}
 			}
-			if (dominatedSetFound)
-				break;
+			//if (dominatedSetFound)
+			//	break;
 		}
 		
 
@@ -227,7 +230,7 @@ void getDomanantSet(Graph graph[][NODES])
 
 	}
 	
-	cout << "Dominated Nodes are: ";
+	/*cout << "Dominated Nodes are: ";
 	for (int u = 0; u < NODES; u++)
 	{
 		if (dominatedNodes[u] != 0)
@@ -235,7 +238,7 @@ void getDomanantSet(Graph graph[][NODES])
 	
 	}
 	cout << endl;
-	
+	*/
 	
 
 
@@ -451,4 +454,29 @@ void printGraph(Graph graph[][NODES])
 	}
 }
 //=============================================================================
+int power(int base, int exp)
+{
+	
+	int product = 1;
+	for (int i = 0; i < exp; i++)
+	{
+		product = product * base;
+	}
 
+	return product;
+}
+
+//==============================================================================
+int binaryToDec(int arr[])
+{
+	int num = 0;
+	for (int i = 0; i < sizeof(arr); i++)
+	{
+		if (arr[i] == 1)
+		{
+			num = num + power(2, i);
+		}
+	}
+
+	return num;
+}
