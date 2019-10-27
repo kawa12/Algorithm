@@ -4,8 +4,9 @@
 #include<stdlib.h>
 #include "Graph.h"
 #include <ctime>
+#include <cmath>
 //number of vertices for the graph
-const int NODES = 30; 
+const int NODES = 24; 
 //edge density in percent 1 to 100
 const int DENSITY = 46; 
 
@@ -55,8 +56,24 @@ int main()
 	getDomanantSet(graph, dominatedNodes);
 
 	time(&time1);
-	double second = time1 - time0;
-	cout << "Time Elapsed: " << second  <<" Seconds"<< endl;
+	
+	
+	int second = time1 - time0;
+	int minutes = 0;
+	int hours = 0;
+	if (second > 60)
+		{
+		minutes = second / 60;
+		second = fmod(second, 60);
+		}
+
+	if (minutes > 60)
+		{
+		hours = minutes / 60;
+		minutes = fmod(minutes, 60);
+		}
+
+	cout << "Time Elapsed: " <<hours<<":"<<minutes<<":"<< second  << endl;
 
 	//doApprox(graph, maxSet);
 
