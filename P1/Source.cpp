@@ -6,7 +6,7 @@
 #include <ctime>
 #include <cmath>
 //number of vertices for the graph
-const int NODES = 24; 
+const int NODES = 5; 
 //edge density in percent 1 to 100
 const int DENSITY = 46; 
 
@@ -15,17 +15,23 @@ const int DENSITY = 46;
 using namespace std;
 
 
-
+//it will return 1 to 100 randomlly
 int rollDice();
+//creates edges between vertices based on value returned by rolldice
 void createEdges(Graph graph[][NODES]);
+//print the graph into console 
 void printGraph(Graph graph[][NODES]);
+//convert decemil to backward binary
 void decToBinary(int n, int combination[]);
+//find the dominant set through Brute Force
 void getDomanantSet(Graph graph[][NODES], int dominatedNodes[]);
+//does the approxmation based on greedy algorithm 
 void doApprox(Graph graph[][NODES], int maxSet[NODES]);
+//finds the the vertix with most edges
 int findDomNode(Graph graph[][NODES]);
+//checks if the vertex is disjoint
 bool isNodeDisJoint(Graph graph[][NODES], int i);
-int power(int base, int exp);
-int binaryToDec(int arr[]);
+
 
 struct DomNode
 {
@@ -75,7 +81,7 @@ int main()
 
 	cout << "Time Elapsed: " <<hours<<":"<<minutes<<":"<< second  << endl;
 
-	//doApprox(graph, maxSet);
+	doApprox(graph, maxSet);
 
 
 
@@ -93,6 +99,17 @@ int main()
 	}
 	cout << endl << endl;
 
+
+	cout << "Estimated Dominant vertices are: ";
+	for (int i = 0; i < NODES; i++)
+	{
+		if (maxSet[i] != 0)
+		{
+			cout << maxSet[i] << ", ";
+
+		}
+	}
+	cout << endl << endl;
 
 	
 
@@ -258,16 +275,7 @@ void getDomanantSet(Graph graph[][NODES], int dominatedNodes[] )
 
 	}
 	
-	/*cout << "Dominated Nodes are: ";
-	for (int u = 0; u < NODES; u++)
-	{
-		if (dominatedNodes[u] != 0)
-			cout << dominatedNodes[u] <<", " << endl;
-	
-	}
-	cout << endl;
-	*/
-	
+
 
 
 }
@@ -275,10 +283,7 @@ void getDomanantSet(Graph graph[][NODES], int dominatedNodes[] )
 // function to convert decimal to binary 
 void decToBinary(int n, int combination[])
 {
-	// array to store binary number 
-	//int binaryNum[NODES+1];
 
-	// counter for binary array 
 	int i = 0;
 	while (n > 0) {
 
@@ -288,13 +293,6 @@ void decToBinary(int n, int combination[])
 		i++;
 	}
 
-
-	
-	// printing binary array in reverse order 
-	//for(int j =0; j<i; j++)
-		//cout << combination[j];
-
-	//cout << endl;
 
 }
 
@@ -330,17 +328,19 @@ void doApprox(Graph graph[][NODES], int maxSet[NODES])
 			maxSet[prev] = nodeWithMaxEdges + 1;
 			for (int i = 0; i < NODES; i++)
 			{
+
 				graph[nodeWithMaxEdges][i].setEdge(false);
 				graph[i][nodeWithMaxEdges].setEdge(false);
-				/*
-				for (int m = 0; m < NODES; m++)
+				
+			/*	for (int m = 0; m < NODES; m++)
 				{
-					if (graph[i][m].hasEdge() && graph[m][nodeWithMaxEdges].hasEdge())
+					if (graph[i][m].hasEdge())
 					{
 						graph[i][m].setEdge(false);
+						graph[m][i].setEdge(false);
 					}
-				}
-				*/
+				}*/
+				
 				
 			}
 			//printGraph(graph);
@@ -480,31 +480,4 @@ void printGraph(Graph graph[][NODES])
 		}
 		cout << endl;
 	}
-}
-//=============================================================================
-int power(int base, int exp)
-{
-	
-	int product = 1;
-	for (int i = 0; i < exp; i++)
-	{
-		product = product * base;
-	}
-
-	return product;
-}
-
-//==============================================================================
-int binaryToDec(int arr[])
-{
-	int num = 0;
-	for (int i = 0; i < sizeof(arr); i++)
-	{
-		if (arr[i] == 1)
-		{
-			num = num + power(2, i);
-		}
-	}
-
-	return num;
 }
